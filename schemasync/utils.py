@@ -1,9 +1,12 @@
+# -*- coding: utf-8 -*-
+
 """Utility functions for Schema Sync"""
 
 import re
 import os
 import datetime
 import glob
+import codecs
 import cStringIO
 
 #REGEX_NO_TICKS = re.compile('`')
@@ -85,6 +88,9 @@ class PatchBuffer(object):
     def __init__(self, name, filters, tpl, ctx, version_filename=False):
         """Inits the PatchBuffer class"""
         self._buffer = cStringIO.StringIO()
+        self._codecinfo = codecs.lookup("utf-8")
+        self._wrapper = codecs.StreamReaderWriter(self._buffer,
+                                          self._codecinfo.streamreader, self._codecinfo.streamwriter)
         self.name = name
         self.filters = filters
         self.tpl = tpl
@@ -95,7 +101,8 @@ class PatchBuffer(object):
     def write(self, data):
         """Write data to the buffer."""
         self.modified = True
-        self._buffer.write(data)
+        #self._buffer.write(data)
+        self._wrapper.write(data)
 
     def save(self):
         """Apply filters, template transformations and write buffer to disk"""
@@ -105,11 +112,12 @@ class PatchBuffer(object):
 
         if self.version_filename:
             self.name = versioned(self.name)
-        fh = open(self.name, 'w')
+        fh = codecs.open(self.name, 'w', 'utf-8')
 
         for f in self.filters:
             data = f(data)
 
+        data = unicode(data, 'utf-8')
         self.ctx['data'] = data
 
         fh.write(self.tpl % self.ctx)
