@@ -9,8 +9,9 @@ setup(
     version='0.9.2',
     description='A MySQL Schema Synchronization Utility',
     author='Mitch Matuson',
-    packages=['schemasync'],
-    install_requires=['SchemaObject >=0.5.3'],
+    packages=['schemasync', 'schemaobject'],
+   # install_requires=['SchemaObject >=0.5.3'],
+    install_requires=[],
     entry_points={
         'console_scripts': [
             'schemasync = schemasync.schemasync:main',

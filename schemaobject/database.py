@@ -1,5 +1,6 @@
 from schemaobject.option import SchemaOption
 from schemaobject.table import TableSchemaBuilder
+from schemaobject.procedure import ProcedureSchemaBuilder
 from schemaobject.collections import OrderedDict
 
 
@@ -70,6 +71,7 @@ class DatabaseSchema(object):
         self.name = name
         self._options = None
         self._tables = None
+        self._procedures = None
 
     @property
     def tables(self):
@@ -93,6 +95,12 @@ class DatabaseSchema(object):
         if self._options == None:
             self._options = OrderedDict()
         return self._options
+
+    @property
+    def procedures(self):
+        if self._procedures == None:
+            self._procedures = ProcedureSchemaBuilder(database=self)
+        return self._procedures
 
     def select(self):
         """

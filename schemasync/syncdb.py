@@ -1,3 +1,5 @@
+# -*- coding: utf-8 -*-
+
 from utils import REGEX_TABLE_AUTO_INC, REGEX_TABLE_COMMENT
 
 
@@ -50,6 +52,9 @@ def sync_schema(fromdb, todb, options):
             p = "%s %s;" % (to_table.alter(), ', '.join(plist))
             r = "%s %s;" % (to_table.alter(), ', '.join(rlist))
             yield p, r
+
+    for p, r in sync_procedure(fromdb, todb):
+        yield p, r
 
 
 def sync_table(from_table, to_table, options):
@@ -392,3 +397,37 @@ def sync_modified_constraints(src, dest):
         if c in dest and src[c] != dest[c]:
             yield dest[c].drop(), dest[c].drop()
             yield src[c].create(), dest[c].create()
+
+
+def sync_procedure(from_db, to_db):
+
+    for p, r in sync_created_procedures(from_db.procedures,
+                                         to_db.procedures):
+         yield (p, r)
+
+    for p, r in sync_modified_procedures(from_db.procedures,
+                                           to_db.procedures):
+         yield (p, r)
+
+    for p, r in sync_dropped_procedures(from_db.procedures,
+                                          to_db.procedures):
+         yield (p, r)
+
+
+def sync_created_procedures(src, dest):
+    for c in src:
+        if c not in dest:
+            yield src[c].create(), src[c].drop()
+
+
+def sync_modified_procedures(src, dest):
+     for c in src:
+        if c in dest and src[c] != dest[c]:
+            yield dest[c].drop(), dest[c].drop()
+            yield src[c].create(), dest[c].create()
+
+
+def sync_dropped_procedures(src, dest):
+     for c in dest:
+        if c not in src:
+            yield dest[c].drop(), dest[c].create()

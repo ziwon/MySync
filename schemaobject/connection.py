@@ -72,7 +72,7 @@ class DatabaseConnection(object):
         rows = cursor.fetchall()
 
         cursor.close()
-        return  [dict(zip(fields, row)) for row in rows]
+        return [dict(zip(fields, row)) for row in rows]
 
     def connect(self, connection_url):
         """Connect to the database"""

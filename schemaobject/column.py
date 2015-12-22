@@ -22,6 +22,7 @@ def ColumnSchemaBuilder(table):
           AND TABLE_NAME='%s'
           ORDER BY ORDINAL_POSITION
           """
+
     columns = conn.execute(sql % (table.parent.name, table.name))
     if not columns:
         return cols
