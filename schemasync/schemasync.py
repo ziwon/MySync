@@ -104,6 +104,10 @@ def parse_cmd_line(fn):
                                 "Default is output directory. "
                                 "Log filename is schemasync.log"))
 
+        parser.add_option("--table-suffix",
+                          dest="table_suffix",
+                          help=("Add a suffix to the name of table."))
+
         options, args = parser.parse_args(sys.argv[1:])
 
 
@@ -116,17 +120,18 @@ def parse_cmd_line(fn):
             return 0
 
         return fn(*args, **dict(version_filename=options.version_filename,
-                                 output_directory=options.output_directory,
-                                 log_directory=options.log_directory,
-                                 tag=options.tag,
-                                 sync_auto_inc=options.sync_auto_inc,
-                                 sync_comments=options.sync_comments))
+                                output_directory=options.output_directory,
+                                log_directory=options.log_directory,
+                                tag=options.tag,
+                                sync_auto_inc=options.sync_auto_inc,
+                                sync_comments=options.sync_comments,
+                                table_suffix=options.table_suffix))
     return processor
 
 
 def app(sourcedb='', targetdb='', version_filename=False,
         output_directory=None, log_directory=None,
-        tag=None, sync_auto_inc=False, sync_comments=False):
+        tag=None, sync_auto_inc=False, sync_comments=False, table_suffix=''):
     """Main Application"""
 
     options = locals()

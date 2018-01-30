@@ -26,8 +26,9 @@ def sync_schema(fromdb, todb, options):
                "%s %s;" % (todb.alter(), r))
 
     for p, r in sync_created_tables(fromdb.tables, todb.tables,
-                                   sync_auto_inc=options['sync_auto_inc'],
-                                   sync_comments=options['sync_comments']):
+                                    sync_auto_inc=options['sync_auto_inc'],
+                                    sync_comments=options['sync_comments'],
+                                    table_suffix=options['table_suffix']):
         yield p, r
 
     for p, r in sync_dropped_tables(fromdb.tables, todb.tables,
@@ -115,8 +116,8 @@ def sync_table(from_table, to_table, options):
 
         # end the alter table syntax with the changed table options
         p, r = sync_table_options(from_table, to_table,
-                                 sync_auto_inc=options['sync_auto_inc'],
-                                 sync_comments=options['sync_comments'])
+                                  sync_auto_inc=options['sync_auto_inc'],
+                                  sync_comments=options['sync_comments'])
         if p:
             yield (p, r)
 
@@ -152,7 +153,8 @@ def sync_database_options(from_db, to_db):
 
 
 def sync_created_tables(from_tables, to_tables,
-                        sync_auto_inc=False, sync_comments=False):
+                        sync_auto_inc=False, sync_comments=False,
+                        table_suffix=None):
     """Generate the SQL statements needed to CREATE Tables in the target
        schema (patch), and remove them (revert)
 
@@ -167,7 +169,11 @@ def sync_created_tables(from_tables, to_tables,
     """
     for t in from_tables:
         if t not in to_tables:
-            p, r = from_tables[t].create(), from_tables[t].drop()
+            if table_suffix:
+                p, r = from_tables[t].create(table_suffix=table_suffix), from_tables[t].drop(table_suffix=table_suffix)
+            else:
+                p, r = from_tables[t].create(), from_tables[t].drop()
+
             if not sync_auto_inc:
                 p = REGEX_TABLE_AUTO_INC.sub('', p)
                 r = REGEX_TABLE_AUTO_INC.sub('', r)

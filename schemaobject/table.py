@@ -179,7 +179,7 @@ class TableSchema(object):
         """
         return "ALTER TABLE `%s`" % (self.name)
 
-    def create(self):
+    def create(self, *args, **kwargs):
         """
         Generate the SQL to create a this table
           >>> schema.databases['sakila'].tables['rental'].create()
@@ -205,14 +205,21 @@ class TableSchema(object):
         result = cursor.execute("SHOW CREATE TABLE `%s`.`%s`" % (self.parent.name, self.name))
         sql = result[0]['Create Table'] + ';'
         sql = sql.replace('\n', '')
+
+        if kwargs.has_key('table_suffix'):
+            sql = sql.replace(self.name, '%s_%s' % (self.name, kwargs['table_suffix']))
         return REGEX_MULTI_SPACE.sub(' ', sql)
 
-    def drop(self):
+    def drop(self, *args, **kwargs):
         """
         Generate the SQL to drop this table
           >>> schema.databases['sakila'].tables['rental'].drop()
           'DROP TABLE `rental`;'
         """
+
+        if kwargs.has_key('table_suffix'):
+            return "DROP TABLE `%s_%s`;" % (self.name, kwargs['table_suffix'])
+
         return "DROP TABLE `%s`;" % (self.name)
 
     def __eq__(self, other):
