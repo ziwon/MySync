@@ -68,7 +68,7 @@ class ProcedureSchema(object):
     def create(self):
         cursor = self.parent.parent.connection
         result = cursor.execute("SHOW CREATE PROCEDURE `%s`.`%s`" % (self.parent.name, self.name))
-        sql = result[0]['Create Procedure'] + ';'
+        sql = result[0]['Create Procedure'] + ';' if result[0]['Create Procedure'] else ''
         sql = sql.replace('\n', '')
         return REGEX_MULTI_SPACE.sub(' ', sql)
 
