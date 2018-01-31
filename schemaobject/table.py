@@ -207,7 +207,8 @@ class TableSchema(object):
         sql = sql.replace('\n', '')
 
         if kwargs.has_key('table_suffix'):
-            sql = sql.replace(self.name, '%s_%s' % (self.name, kwargs['table_suffix']))
+            sql = sql.replace(self.name, '%s_%s' % (self.name, kwargs['table_suffix']), 1)
+        
         return REGEX_MULTI_SPACE.sub(' ', sql)
 
     def drop(self, *args, **kwargs):
